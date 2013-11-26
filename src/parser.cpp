@@ -1,21 +1,19 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <fstream>
+#include <vector>
+#include <iterator>
+
 using namespace std;
 
-class parser
-{
-private:
-  char *pExpr;
-public:
-  parser();
-  double parse(char *exp);
-  ~parser();
-};
+#include "stringutil.h"
+#include "parser.h"
 
-parser::parser()
+parser::parser(char*  filename)
 {
-  cout << "Start.. " << endl;
+  _filename = filename;
+  cout << "Parsing " << filename << endl;
 }
 
 parser::~parser() 
@@ -23,23 +21,73 @@ parser::~parser()
   cout << "The End." << endl;
 }
 
-double parser::parse(char *exp)
+void parser::print_production_stmt(vector<string> target_files, vector<string> dependency_files, string command)
 {
-  pExpr = exp;
-  cout << pExpr << endl;
+  cout << "Target Files:" << endl;
+  for (int k = 0; k < target_files.size(); k++)
+    cout << k << " => " << target_files[k] << endl;
+
+  cout << "Dependency Files:" << endl;
+  for (int k = 0; k < dependency_files.size(); k++)
+    cout << k << " => " << dependency_files[k] << endl;
+
+  cout << "Command: " << command << endl;
+}
+
+void parser::parse()
+{
+
+  string str;
+  ifstream infile(_filename);
+  while(!infile.eof())
+    {
+      getline(infile,str); 
+     
+      stringutil production(str);
+      vector<string> flds = production.split("<-");
+
+  
+      if(flds.size() != 2) 
+	{
+	  cout << "error in grammar:" << str << endl;
+	}
+  
+      //target files
+      stringutil targets(flds[0]);
+      vector<string> target_files = targets.split(",");
+
+      //dependency : command
+      stringutil dependency_command(flds[1]);
+      vector<string> dc_stmt = dependency_command.split(":");
+
+      //sanity check
+      if(dc_stmt.size() == 0 || dc_stmt.size() > 2)  {
+	//error!
+      }
+  
+      stringutil dependency(dc_stmt[0]);
+      vector<string> dependency_files = dependency.split(",");
+  
+      //command exists
+      string command;
+      if(dc_stmt.size() == 2) {
+	command = dc_stmt[1];
+  }
+
+  
+  cout << "---------------" <<endl;
+  print_production_stmt(target_files, dependency_files, command);
+
+    }
 }
 
 int main() 
-{
-  string s = "DEFAULT <- baz";
-  parser program;
-  char expstr[80];
-  cin.getline(expstr, 79);
+{  
+  //default name
+  char filename[] = "makefile_re";
+  parser program(filename);
+  program.parse();
 
-  program.parse(expstr);
+  
   return 0;
 }
-#if(md5(file1Path) == md5(file2Path))
-#    cout<<"Files are equal"<<endl;
-#else
-#    cout<<"Files are not equal"<<endl;
