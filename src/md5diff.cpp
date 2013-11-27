@@ -27,22 +27,24 @@ md5diff::~md5diff(){
 }
 bool md5diff::diff(char* file1, char* file2)
 {
-  int i;
   string c1 = compute_md5(file1);
   string c2 = compute_md5(file2);
  
   bool flag = 1;
-  
-  for(i = 0; i < MD5_DIGEST_LENGTH; i++) {
+  cout << c1 << file1 << endl;
+  cout << c2 << file2 << endl;
+
+  for(int i = 0; i < MD5_DIGEST_LENGTH; i++) {
     flag = flag && (c1[i] == c2[i]);
   }
   cout << flag << endl;
+  return flag;
 }
 
 std::string md5diff::compute_md5(char* file)
 {
   unsigned char c[MD5_DIGEST_LENGTH];
-  int i;
+
   string hashcode;
   FILE *inFile = fopen (file, "rb");
   MD5_CTX mdContext;
@@ -70,12 +72,17 @@ std::string md5diff::compute_md5(char* file)
   fclose (inFile);
   
   return hashcode;
-};
+}
 
 int main()
 {
-  char* f1 = "parser.cpp";
-  char* f2 = "parser1.cpp";
+  //char* f1 = "parser.cpp";
+  //char* f2 = "parser.cpp";
+  char f1[31];
+  char f2[31];
+
+  cin.getline(f1, 30);
+  cin.getline(f2, 30);
 
   md5diff md5diff1;
   md5diff1.diff(f1, f2);

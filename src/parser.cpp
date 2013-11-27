@@ -10,7 +10,9 @@ using namespace std;
 #include "stringutil.h"
 #include "parser.h"
 
-parser::parser(char*  filename)
+
+
+parser::parser(char* filename)
 {
   _filename = filename;
   cout << "Parsing " << filename << endl;
@@ -24,28 +26,29 @@ parser::~parser()
 void parser::print_production_stmt(vector<string> target_files, vector<string> dependency_files, string command)
 {
   cout << "Target Files:" << endl;
-  for (int k = 0; k < target_files.size(); k++)
+  for (unsigned int k = 0; k < target_files.size(); k++)
     cout << k << " => " << target_files[k] << endl;
 
   cout << "Dependency Files:" << endl;
-  for (int k = 0; k < dependency_files.size(); k++)
+  for (unsigned int k = 0; k < dependency_files.size(); k++)
     cout << k << " => " << dependency_files[k] << endl;
 
   cout << "Command: " << command << endl;
 }
 
-void parser::parse()
+vector<production>& parser::parse()
 {
-
+  if (!_productions.empty()) _productions.clear();
   string str;
   ifstream infile(_filename);
+
   while(!infile.eof())
     {
       getline(infile,str); 
-     
-      stringutil production(str);
-      vector<string> flds = production.split("<-");
 
+      stringutil production_stmt(str);
+      vector<string> flds = production_stmt.split("<-");
+      
   
       if(flds.size() != 2) 
 	{
@@ -61,33 +64,39 @@ void parser::parse()
       vector<string> dc_stmt = dependency_command.split(":");
 
       //sanity check
-      if(dc_stmt.size() == 0 || dc_stmt.size() > 2)  {
-	//error!
-      }
+      if(dc_stmt.size() == 0 || dc_stmt.size() > 2)  
+	{
+	  //error!
+	}
   
       stringutil dependency(dc_stmt[0]);
       vector<string> dependency_files = dependency.split(",");
   
       //command exists
       string command;
-      if(dc_stmt.size() == 2) {
-	command = dc_stmt[1];
-  }
+      if(dc_stmt.size() == 2) 
+	{
+	  command = dc_stmt[1];
+	}
 
-  
-  cout << "---------------" <<endl;
-  print_production_stmt(target_files, dependency_files, command);
+      production obj(target_files, dependency_files, command);
+      _productions.push_back(obj);
+
+      cout << "---------------" <<endl;
+      print_production_stmt(target_files, dependency_files, command);
 
     }
+
+  return _productions;
 }
+
 
 int main() 
 {  
   //default name
   char filename[] = "makefile_re";
   parser program(filename);
-  program.parse();
-
-  
+  vector<production> productions = program.parse();
+  cout << productions.size() << " statements found." << endl;
   return 0;
 }
