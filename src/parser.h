@@ -12,7 +12,6 @@ private:
 public:
   parser(char* filename);
   vector<production>& parse();
-  void print_production_stmt(vector<string> target_files, vector<string> dependency_files, string command);
   ~parser();
 };
 

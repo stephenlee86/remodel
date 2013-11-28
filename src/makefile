@@ -1,17 +1,23 @@
-all: remodel
+all: clean remodel
 
-remodel: stringutil.o parser.o
-	g++ stringutil.o parser.o -o remodel
+remodel: stringutil.o parser.o graph.o production.o 
+	g++ stringutil.o parser.o graph.o production.o -o remodel
+
+parser.o: parser.cpp
+	g++ -c -Wall -pedantic parser.cpp
 
 stringutil.o: stringutil.cpp
 	g++ -c -Wall -pedantic stringutil.cpp
 
-parser.o: parser.cpp
-	g++ -c -Wall -pedantic parser.cpp
+production.o: production.cpp
+	g++ -c -Wall -pedantic production.cpp
+
+graph.o: graph.cpp
+	g++ -c -Wall -pedantic graph.cpp
 
 md5diff.o: md5diff.cpp
 	g++ -c -Wall md5diff.cpp -lcrypto
 
 clean:
-	rm -rf *o remodel
+	rm -f *.o remodel
 

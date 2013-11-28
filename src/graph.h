@@ -1,56 +1,64 @@
-#include "production.h"
+#include<iostream>
+#include <list>
+#include <stack>
+#include <map>
+#include <vector>
+using namespace std;
 
-#ifndef _GRAPH_H
-#define _GRAPH_H
+#ifndef _NODE_H
+#define _NODE_H
 
-class node 
-{
- private:  
-  node* _parent;
-  vector<node> _child;
+struct node{
+  
   production _prod_stmt;
+  string _target;
+  string _dependency;
 
- public:
-  node();
-  ~node();
-  void setParent(node* parent);
-  void setChild(vector<node> child);
-  void setProductionStmt(production prod_stmt);
-  node* getParent();
-  vector<node>& getChild();
-  production getProductionStmt();
-
+  node(string target, string dependency, production prod_stmt)
+  {
+    _target = target;
+    _dependency = dependency;
+    _prod_stmt = prod_stmt;
+  }
 };
 
-node::node()
+#endif
+
+#ifndef _GRAPHN_H
+#define _GRAPHN_H
+
+// Class to represent a graph
+class Graph
 {
-}
+  int V;    // No. of vertices'
 
-node* node::getParent()
-{
-  return _parent;
-}
-vector<node>& node::getChild()
-{
-  return _child;
-}
-production node::getProductionStmt(){
-  return _prod_stmt;
-}
+  // Pointer to an array containing adjacency listsList
+  list<int> *adj;
 
-node::~node() 
-{
-}
+  // A function used by topologicalSort
+  void topologicalSortUtil(int v, map<int, bool> visited, stack<int> &Stack);
+  bool isCyclicUtil(int v, map<int, bool> visited, bool *rs);  // used by isCyclic()
 
-class graph 
-{
+  
 
- private:
-  vector<vector<node> > _production_graph;
+  //Root node  
+  typedef map<string, map<string, node *> > gmap;
+  gmap graph_map;
+  bool is_cyclic_graph(string , map<string, bool>, map<string, bool>);
 
- public:
-  void create_dependency_graph(vector<production> productions);
+public:
+  Graph(int V);   // Constructor
+  Graph();
+  // function to add an edge to graph
+  void addEdge(int v, int w);
+  void insert_edge(production);
 
+  // prints a Topological Sort of the complete graph
+  void topologicalSort();
+  bool isCyclic();
+  bool is_cyclic();
+
+  void mark(string vertex, map<string, bool> &mmap, bool value);
+  bool is_marked(string vertex, map<string, bool> mmap);
 };
-
 #endif
