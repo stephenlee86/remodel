@@ -26,19 +26,22 @@ struct node{
 #ifndef _GRAPHN_H
 #define _GRAPHN_H
 
+typedef map<string, map<string, node *> > gmap;
 // Class to represent a graph
 class graph
 {
-  typedef map<string, map<string, node *> > gmap;
-  gmap graph_map;
+ private:
+  gmap _graph_map;
   bool is_cyclic_graph(string , map<string, bool>, map<string, bool>);
-  void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &stack);
-public:
-  graph();
+  void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue);
+
+ public:
   void insert_edge(production);
   bool is_cyclic();
   bool is_marked(string vertex, map<string, bool> mmap);
-  void topological_sort();
+  const queue<string> topological_sort();
   void print();
+  gmap get_graph();
+  node* find(string vertex);
 };
 #endif

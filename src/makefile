@@ -1,7 +1,7 @@
 all: clean remodel
 
-remodel: stringutil.o parser.o graph.o production.o remodel.o
-	g++ stringutil.o parser.o graph.o production.o remodel.o -o remodel
+remodel: stringutil.o commandutil.o parser.o graph.o production.o remodel.o
+	g++ stringutil.o commandutil.o parser.o graph.o production.o remodel.o -o remodel
 
 remodel.o: remodel.cpp
 	g++ -c -Wall -pedantic remodel.cpp
@@ -11,6 +11,9 @@ parser.o: parser.cpp
 
 stringutil.o: stringutil.cpp
 	g++ -c -Wall -pedantic stringutil.cpp
+
+commandutil.o: commandutil.cpp
+	g++ -c -Wall -pedantic -std=c++11 commandutil.cpp
 
 production.o: production.cpp
 	g++ -c -Wall -pedantic production.cpp

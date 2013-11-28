@@ -26,13 +26,17 @@
 #include <vector>
 #include <iterator>
 #include <map>
+#include <queue>
 
 using namespace std;
 
 #include "stringutil.h"
 #include "parser.h"
 #include "graph.h"
-//TODO Sanity check of the grammar
+#include "commandutil.h"
+
+//TODO Sanity check of the grammar -- case where command can be any random query
+
 int main() 
 {  
   //default name
@@ -54,10 +58,18 @@ int main()
   else
     cout << "Graph doesn't contain cycle" << endl;
 
+  //check for syntax and there is going to be only one root.
+
   //graph.print();
-  graph.topological_sort();
- 
+  queue<string> queue = graph.topological_sort();
+  // while (!queue.empty())
+  //   {
+  //     cout<< "FROM QUEUE:" << queue.front() << " " << endl;
+  //     queue.pop();
+    // }
+  commandutil::exec_all(queue, graph);
   return 0;
+
 }
 
  // Graph g(6);

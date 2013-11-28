@@ -12,20 +12,20 @@ using namespace std;
 #include "graph.h"
 #include "stringutil.h"
 
-graph::graph()
+gmap graph::get_graph()
 {
-
+  return _graph_map;
 }
 
 void graph::print()
 {
   cout << "printing graph" << endl;
-  for( gmap::iterator i=graph_map.begin(); i!=graph_map.end(); ++i)
+  for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
     {
       string key = (*i).first;
       cout << "Target.. "<<key << endl;
 
-      for(map<string, node*>::iterator j = graph_map[key].begin(); j!=graph_map[key].end(); ++j)
+      for(map<string, node*>::iterator j = _graph_map[key].begin(); j!=_graph_map[key].end(); ++j)
 	{
 	  cout <<"     child:: " << (*j).first << endl;
 	}
@@ -39,22 +39,22 @@ void graph::insert_edge(production prod_stmt)
   string dependency_csv = prod_stmt.getDependencyFilesCSV();
   //cout << target_csv << " : " << dependency_csv << endl;
   
-  gmap::iterator itr = graph_map.begin();
-  itr = graph_map.find(target_csv);
+  gmap::iterator itr = _graph_map.begin();
+  itr = _graph_map.find(target_csv);
   node *v;
   v = new node(target_csv, dependency_csv, prod_stmt);
  
-  if(itr == graph_map.end())
+  if(itr == _graph_map.end())
     {
       //if the target is not found
       map<string, node*> dependent_map; 
       dependent_map[dependency_csv] = v;
-      graph_map[target_csv] = dependent_map;
+      _graph_map[target_csv] = dependent_map;
     } 
   else 
     {
       //target is found // check if the dependent exists
-      map<string, node *> dependent_map = graph_map[target_csv];
+      map<string, node *> dependent_map = _graph_map[target_csv];
       map<string, node *>::iterator d_itr = dependent_map.begin();
       d_itr = dependent_map.find(dependency_csv);
 
@@ -62,7 +62,7 @@ void graph::insert_edge(production prod_stmt)
 	{
 	  //target was not found // add the new node
 	  dependent_map[dependency_csv]= v;
-	  graph_map[target_csv] = dependent_map;
+	  _graph_map[target_csv] = dependent_map;
 	}
       else 
 	{
@@ -77,9 +77,9 @@ void graph::insert_edge(production prod_stmt)
 void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue)
 {
   //Check to see if not leaf... 
-  gmap::iterator vitr = graph_map.begin();
-  vitr = graph_map.find(vertex);
-  if(vitr == graph_map.end())
+  gmap::iterator vitr = _graph_map.begin();
+  vitr = _graph_map.find(vertex);
+  if(vitr == _graph_map.end())
     {
       //leaf node ---  e.g. bar.o <- bar.cpp and bar.cpp is the leaf node... 
       //cout << vertex << endl;
@@ -106,7 +106,7 @@ void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map
   visited_map[vertex] = true;
   
   //  cout << "Visiting " << vertex << endl;
-  for(map<string, node*>::iterator i = graph_map[vertex].begin(); i != graph_map[vertex].end(); ++i)
+  for(map<string, node*>::iterator i = _graph_map[vertex].begin(); i != _graph_map[vertex].end(); ++i)
     {
       if (!visited_map[(*i).first])
 	{
@@ -120,18 +120,18 @@ void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map
 }
 
 //This is printing in reverse order ... need to order them correctly.
-void graph::topological_sort()
+const queue<string> graph::topological_sort()
 {
   queue<string> queue;
   map<string, bool> visited_map;
   // Mark all the vertices as not visited
-  for( gmap::iterator i = graph_map.begin(); i != graph_map.end(); ++i)
+  for( gmap::iterator i = _graph_map.begin(); i != _graph_map.end(); ++i)
     {
       //cout << "Targets: " << (*i).first << endl;
       visited_map[(*i).first] = false;
     }
   
-  for( gmap::iterator i=graph_map.begin(); i!=graph_map.end(); ++i)
+  for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
     {
       string target = (*i).first;
       if (!visited_map[target])
@@ -142,11 +142,12 @@ void graph::topological_sort()
 
   // Print contents of stack
   //topological sorted graph in a stack
-  while (!queue.empty())
-    {
-      cout<< "FROM STACK:" << queue.front() << " " << endl;
-      queue.pop();
-    }
+  // while (!queue.empty())
+  //   {
+  //     cout<< "FROM QUEUE:" << queue.front() << " " << endl;
+  //     queue.pop();
+  //   }
+  return queue;
 }
 
 bool graph::is_marked(string vertex, map<string, bool> mmap)
@@ -166,9 +167,9 @@ bool graph::is_marked(string vertex, map<string, bool> mmap)
 bool graph::is_cyclic_graph(string vertex, map<string, bool> visited_map, map<string, bool> recursion_map)
 {
   
-  gmap::iterator vitr = graph_map.begin();
-  vitr = graph_map.find(vertex);
-  if(vitr == graph_map.end())
+  gmap::iterator vitr = _graph_map.begin();
+  vitr = _graph_map.find(vertex);
+  if(vitr == _graph_map.end())
     {
       //leaf node ---  e.g. bar.o <- bar.cpp and bar.cpp is the leaf node... 
       //cout << vertex << endl;
@@ -188,7 +189,7 @@ bool graph::is_cyclic_graph(string vertex, map<string, bool> visited_map, map<st
       recursion_map[vertex] = true;
       // Recur for all the vertices adjacent to this vertex
       //list<int>::iterator i;
-      for(map<string, node*>::iterator j = graph_map[vertex].begin(); j != graph_map[vertex].end(); ++j)
+      for(map<string, node*>::iterator j = _graph_map[vertex].begin(); j != _graph_map[vertex].end(); ++j)
         {
 	  string target = (*j).first; 
 	  //mark((*i).first, visited_map,  false);
@@ -239,7 +240,7 @@ bool graph::is_cyclic()
   map<string, bool> recursion_map;
   //make all visited false
   
-  for( gmap::iterator i=graph_map.begin(); i!=graph_map.end(); ++i)
+  for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
     {
       visited_map[(*i).first] = false;
       recursion_map[(*i).first] = false;
@@ -250,7 +251,7 @@ bool graph::is_cyclic()
   //     cout << "visited_map: " << (*i).first << "=" << visited_map[(*i).first]<< endl;
   //   }
   
-  for( gmap::iterator i = graph_map.begin(); i!=graph_map.end(); ++i)
+  for( gmap::iterator i = _graph_map.begin(); i!=_graph_map.end(); ++i)
     {
       //cout << "Traversing .. "<< (*i).first << endl;
       if (is_cyclic_graph((*i).first, visited_map, recursion_map))
@@ -260,4 +261,35 @@ bool graph::is_cyclic()
   return false;
 }
 
+node* graph::find(string vertex)
+{
+
+  gmap::iterator itr = _graph_map.begin();
+  itr = _graph_map.find(vertex);
+  if(itr != _graph_map.end()) 
+    {
+        
+      map<string, node*> dep_map =  _graph_map[vertex];
+      if(dep_map.size()>1) cout<<"something wrong??"<<endl;
+      for( map<string, node*>::iterator i=dep_map.begin(); i!=dep_map.end(); ++i)
+	{
+	  return (*i).second;
+	}
+    }
+
+  cout << vertex << " not found!.. something must be wrong.." << endl;
+  return NULL;
+  // for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
+  //   {
+  //     //      for(map<string, node*>::iterator j=_graph_map[(*i).first].begin(); j!=_graph_map[(*i).first].end(); ++j)
+  // 	// {
+  // 	//   cout << vertex << " " << (*j).first<< endl;
+  // 	//   //if (vertex == (*j).first)
+  // 	//   //return (*j).second;
+  // 	// }
+      
+
+  //   }
+
+}
 
