@@ -1,0 +1,82 @@
+/*
+
+  (md5diff(oldA,newA) => everything that depends on A must be rebuilt)
+
+  while not complete {
+
+  move through the topo sort array; 
+ 
+  check if dependency available then compile... ??
+
+  cp target to .remodel/target
+
+  if target output is different than remodel output
+  then compile upward dependencies again.. ??
+  --- mark upward dependencies as not compiled
+ 
+  mark current as compiled
+
+  }
+*/
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <vector>
+#include <iterator>
+#include <map>
+
+using namespace std;
+
+#include "stringutil.h"
+#include "parser.h"
+#include "graph.h"
+//TODO Sanity check of the grammar
+int main() 
+{  
+  //default name
+  char filename[] = "makefile_re";
+  //char filename[] = "test_cases/cyclic_make_testcase_2";
+  parser program(filename);
+  vector<production> productions = program.parse();
+  
+  cout << productions.size() << " production statements found." << endl;
+  
+  graph graph;
+  for (unsigned int i = 0; i < productions.size(); i++)
+    {
+      graph.insert_edge(productions[i]);
+    }
+
+  if(graph.is_cyclic())
+    cout << "Graph contains cycle" << endl;
+  else
+    cout << "Graph doesn't contain cycle" << endl;
+
+  //graph.print();
+  graph.topological_sort();
+ 
+  return 0;
+}
+
+ // Graph g(6);
+  // g.addEdge(0, 1);
+  // g.addEdge(1, 2);
+  // g.addEdge(2,2);
+  // g.addEdge(4, 0);
+  // g.addEdge(4, 1);
+  // g.addEdge(2, 3);
+  // g.addEdge(3, 1);
+  // if(g.isCyclic())
+  //   cout << "Graph contains cycle" << endl;
+  // else
+  //   cout << "Graph doesn't contain cycle" << endl;
+
+
+
+  // g.addEdge(3, 5);
+
+
+  // cout << "Following is a Topological Sort of the given graph \n";
+  // g.topologicalSort();
