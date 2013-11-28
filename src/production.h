@@ -18,7 +18,7 @@ class production{
   string& getCommand();
   string getTargetFilesCSV();
   string getDependencyFilesCSV();
-  void print_production_stmt();
+  void print();
 };
 
 #endif

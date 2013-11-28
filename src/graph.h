@@ -1,8 +1,7 @@
 #include<iostream>
-#include <list>
-#include <stack>
+#include <queue>
 #include <map>
-#include <vector>
+
 using namespace std;
 
 #ifndef _NODE_H
@@ -28,37 +27,18 @@ struct node{
 #define _GRAPHN_H
 
 // Class to represent a graph
-class Graph
+class graph
 {
-  int V;    // No. of vertices'
-
-  // Pointer to an array containing adjacency listsList
-  list<int> *adj;
-
-  // A function used by topologicalSort
-  void topologicalSortUtil(int v, map<int, bool> visited, stack<int> &Stack);
-  bool isCyclicUtil(int v, map<int, bool> visited, bool *rs);  // used by isCyclic()
-
-  
-
-  //Root node  
   typedef map<string, map<string, node *> > gmap;
   gmap graph_map;
   bool is_cyclic_graph(string , map<string, bool>, map<string, bool>);
-
+  void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &stack);
 public:
-  Graph(int V);   // Constructor
-  Graph();
-  // function to add an edge to graph
-  void addEdge(int v, int w);
+  graph();
   void insert_edge(production);
-
-  // prints a Topological Sort of the complete graph
-  void topologicalSort();
-  bool isCyclic();
   bool is_cyclic();
-
-  void mark(string vertex, map<string, bool> &mmap, bool value);
   bool is_marked(string vertex, map<string, bool> mmap);
+  void topological_sort();
+  void print();
 };
 #endif

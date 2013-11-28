@@ -3,13 +3,11 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <iterator>
-#include <map>
+#include <stdlib.h>
 using namespace std;
 
 #include "stringutil.h"
 #include "parser.h"
-#include "graph.h"
 
 parser::parser(char* filename)
 {
@@ -32,7 +30,7 @@ vector<production>& parser::parse()
   while(!infile.eof())
     {
       getline(infile,str); 
-
+      string temp = str;
       if (stringutil::trim(str).empty()) continue;
 
 
@@ -40,7 +38,8 @@ vector<production>& parser::parse()
       
       if(flds.size() != 2) 
 	{
-	  cout << "error in grammar :" << str << endl;
+	  cout << "error in grammar(statement should contain only one '<-'):" << temp << endl;
+	  exit (EXIT_FAILURE);
 	}
   
       //target files
@@ -52,7 +51,10 @@ vector<production>& parser::parse()
       //sanity check
       if(dc_stmt.size() == 0 || dc_stmt.size() > 2)  
 	{
-	  //error in grammar! TODO handle this? exit/9
+	  //error in grammar!
+	  //TODO..command parsing properly .. may contain arbitrary command in quotes
+	  cout << "error in grammar(statement should contain atleast one dependency and no more than one command): " << temp << endl;
+	  exit (EXIT_FAILURE);
 	}
   
       vector<string> dependency_files = stringutil::split(dc_stmt[0], ",");
@@ -72,56 +74,3 @@ vector<production>& parser::parse()
   return _productions;
 }
 
-
-int main() 
-{  
-  //default name
-  char filename[] = "makefile_re";
-  //char filename[] = "test_cases/cyclic_make_testcase_2";
-  parser program(filename);
-  vector<production> productions = program.parse();
-  
-  cout << productions.size() << " statements found." << endl;
-  
-  //Graph graph;
-  //graph.create_dependency_graph(productions);
-
-  Graph graph;
-  for (unsigned int i = 0; i < productions.size(); i++)
-    {
-      //productions[i].print_production_stmt();
-      cout << "inserting edge.. " << endl;
-      graph.insert_edge(productions[i]);
-    }
-
-  
-
-  
-  if(graph.is_cyclic())
-    cout << "Graph contains cycle" << endl;
-  else
-    cout << "Graph doesn't contain cycle" << endl;
-
-  // Graph g(6);
-  // g.addEdge(0, 1);
-  // g.addEdge(1, 2);
-  // g.addEdge(2,2);
-  // g.addEdge(4, 0);
-  // g.addEdge(4, 1);
-  // g.addEdge(2, 3);
-  // g.addEdge(3, 1);
-  // if(g.isCyclic())
-  //   cout << "Graph contains cycle" << endl;
-  // else
-  //   cout << "Graph doesn't contain cycle" << endl;
-
-
-
-  // g.addEdge(3, 5);
-
-
-  // cout << "Following is a Topological Sort of the given graph \n";
-  // g.topologicalSort();
-
-  return 0;
-}

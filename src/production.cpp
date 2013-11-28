@@ -47,7 +47,7 @@ string production::getDependencyFilesCSV()
     ss << _dependency_files[i] << ",";
   return ss.str().substr(0, ss.str().size()-1 );
 }
-void production::print_production_stmt()
+void production::print()
 {
   cout << "Target Files:" << endl;
   for (unsigned int i = 0; i < _target_files.size(); i++)
