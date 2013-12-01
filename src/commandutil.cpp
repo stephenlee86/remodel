@@ -45,10 +45,11 @@ bool commandutil::exec_all(queue<string> queue, graph graph)
       node* node= graph.find(target);
 
       //check if dependency exists
-      cout<< target << " " << node->_prod_stmt.getCommand() << endl;
       
-      string cmd = node->_prod_stmt.getCommand() ;
       
+      string cmd = node->prod_stmt.getCommand() ;
+      cmd = cmd.substr(1,cmd.length()-2);
+      cout<< target << " " << cmd << endl;
       exec_thread(cmd);
 
       //Makes the main thread wait for the new thread to finish execution, therefore blocks execution.

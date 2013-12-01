@@ -7,17 +7,17 @@ using namespace std;
 #ifndef _NODE_H
 #define _NODE_H
 
-struct node{
-  
-  production _prod_stmt;
-  string _target;
-  string _dependency;
+struct node
+{  
+  production prod_stmt;
+  string target;
+  string dependency;
 
-  node(string target, string dependency, production prod_stmt)
+  node(string tgt, string dep, production pstmt)
   {
-    _target = target;
-    _dependency = dependency;
-    _prod_stmt = prod_stmt;
+    target = tgt;
+    dependency = dep;
+    prod_stmt = pstmt;
   }
 };
 
@@ -26,21 +26,27 @@ struct node{
 #ifndef _GRAPHN_H
 #define _GRAPHN_H
 
-typedef map<string, map<string, node *> > gmap;
+typedef map<string, node* > gmap;
 // Class to represent a graph
 class graph
 {
  private:
   gmap _graph_map;
-  bool is_cyclic_graph(string , map<string, bool>, map<string, bool>);
   void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue);
+  
+  //  map<string, string> _adj_map;    // Pointer to an array containing adjacency lists
+  void add_edge(map<string,string> &, string target, string dependency);
+  bool is_cyclic_graph(map<string, string>, string , map<string, bool> , map<string,bool> &);  // used by isCyclic()
+  
 
  public:
   void insert_edge(production);
   bool is_cyclic();
-  bool is_marked(string vertex, map<string, bool> mmap);
+
+  /* bool is_marked(string vertex, map<string, bool> mmap); */
   const queue<string> topological_sort();
   void print();
+
   gmap get_graph();
   node* find(string vertex);
 };

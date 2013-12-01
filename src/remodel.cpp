@@ -62,12 +62,12 @@ int main()
 
   //graph.print();
   queue<string> queue = graph.topological_sort();
-  // while (!queue.empty())
-  //   {
-  //     cout<< "FROM QUEUE:" << queue.front() << " " << endl;
-  //     queue.pop();
-    // }
-  commandutil::exec_all(queue, graph);
+  while (!queue.empty())
+    {
+      cout<< "FROM QUEUE:" << queue.front() << " " << endl;
+      queue.pop();
+    }
+  //commandutil::exec_all(queue, graph);
   return 0;
 
 }
