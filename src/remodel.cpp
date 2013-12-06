@@ -34,6 +34,7 @@ using namespace std;
 #include "parser.h"
 #include "graph.h"
 #include "commandutil.h"
+#include "tree.h"
 
 //TODO Sanity check of the grammar -- case where command can be any random query
 
@@ -58,27 +59,43 @@ int main()
   else
     cout << "Graph doesn't contain cycle" << endl;
 
-  vector<node*> leafnodes = graph.findAllLeafNodes();
-  for(unsigned int i = 0; i < leafnodes.size();i++)
-    {
-      cout<<"Target:" << leafnodes[i]->target << endl;
-    }
+  // vector<node*> leafnodes = graph.findAllLeafNodes();
+  // for(unsigned int i = 0; i < leafnodes.size();i++)
+  //   {
+  //     cout<<"Target:" << leafnodes[i]->target << endl;
+  //   }
   // //check for syntax and there is going to be only one root.
 
-  // graph.print();
-  queue<string> queue = graph.topological_sort();
+  // // graph.print();
+  // queue<string> queue = graph.topological_sort();
   
 
-  while (!queue.empty())
-    {
-      cout<< "FROM QUEUE:" << queue.front() << " " << endl;
-      queue.pop();
-    }
-  
+  // while (!queue.empty())
+  //   {
+  //     cout<< "FROM QUEUE:" << queue.front() << " " << endl;
+  //     queue.pop();
+  //   }
 
-  //commandutil::exec_all(queue, graph);
+
+  // for(unsigned int i = 0; i < tree_graph.size(); i++) 
+  //   {
+  //     //tree_util::print_level_order(tree_graph[i]);
+  //     //cout << "dss" << endl;
+  //     // int height = tree_util::height(tree_graph[i]);
+  //     // cout << "height in parallel:" << height << endl;
+  //     // for(int k = height; k > 2; k--) {
+  //     // 	vector<string> targets;
+  //     // 	tree_util::get_given_level(tree_graph[k], 1, targets);
+  //     // 	for(unsigned int j = 0; j < targets.size(); j++)
+  //     // 	  {
+  //     // 	    cout << "For "<<  ":" << targets[j] << endl;
+  //     // 	  }
+  //     // }
+  //   }
+  //  vector<tree*> tree_graph =  graph.get_tree_graph();
+  commandutil::exec_in_parallel(graph);
+
   return 0;
-
 }
 
  // Graph g(6);

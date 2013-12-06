@@ -11,15 +11,7 @@
 using namespace std;
 
 #include <openssl/md5.h>
-class md5diff
-{
-private:
-  std::string compute_md5(char *file);
-public:
-  md5diff();
-  bool diff(char* file1, char* file2);
-  ~md5diff();
-};
+#include "md5diff.h"
 
 md5diff::md5diff(){
 }
@@ -31,13 +23,14 @@ bool md5diff::diff(char* file1, char* file2)
   string c2 = compute_md5(file2);
  
   bool flag = 1;
-  cout << c1 << file1 << endl;
-  cout << c2 << file2 << endl;
+  //  cout << c1 << file1 << endl;
+  //  cout << c2 << file2 << endl;
 
   for(int i = 0; i < MD5_DIGEST_LENGTH; i++) {
     flag = flag && (c1[i] == c2[i]);
   }
-  cout << flag << endl;
+  //  cout << flag << endl;
+  //0 -- is different
   return flag;
 }
 

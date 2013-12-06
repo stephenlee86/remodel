@@ -31,9 +31,10 @@ class graph
 {
  private:
   gmap _graph_map;
-  vector<tree*> graph;
+  vector<tree*> _tree_graph;
   void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue);
-  
+
+
   //  map<string, string> _adj_map;    // Pointer to an array containing adjacency lists
   void add_edge(map<string, vector<string> > &, string target, string dependency);
   bool is_cyclic_graph(map<string, vector<string> >, string , map<string, bool> , map<string,bool> &);  // used by isCyclic()
@@ -47,8 +48,10 @@ class graph
   void print();
 
   gmap get_graph();
+  vector<tree*> get_tree_graph();
   node* find(string vertex);
-
+  node* findTargets(string vertex);
+  
   bool hasDependency(node* node);
   vector<node*> findAllLeafNodes();
   bool isKeyPresent(string key);

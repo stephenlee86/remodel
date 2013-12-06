@@ -4,25 +4,28 @@
 
 struct tree
 {
-  
   int data;
   string name;
   vector<tree*> child;
 
-  tree(string name, int d)
+  tree(string n, int d)
   {
     data = d;
+    name = n;
   }
 };
 
 class tree_util {
  public:
-  /*Function protoypes*/
-  void printGivenLevel(struct tree* root, int level);
-  void printLevelOrder(tree* root);
-  int height(struct tree* node);
-  void add_edge(vector<tree*> &graph, int target, int dependency);
-  tree* add_edge(tree *t, int data);
-  tree*& find(tree* &node, int data);
+
+  static void print_given_level(struct tree* root, int level);
+  static  void print_level_order(tree* root);
+  
+  static  int height(struct tree* node);
+  static  void add_edge(vector<tree*> &graph, string target, string dependency);
+  static  tree* add_edge(tree *t, string data);
+  static  tree*& find(tree* &node, string data);
+
+  static  void get_given_level(tree *node, int level, vector<string> &result);
 };
 #endif

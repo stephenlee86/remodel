@@ -18,6 +18,10 @@ gmap graph::get_graph()
   return _graph_map;
 }
 
+vector<tree*> graph::get_tree_graph(){
+  return _tree_graph;
+}
+
 void graph::print()
 {
   cout << "printing graph" << endl;
@@ -76,7 +80,11 @@ void graph::insert_edge(production prod_stmt)
       // 	  cout << target_csv << " " << dependency_csv << endl << endl;
       // 	}
     }
+
   _graph_map.insert(make_pair(target_csv, n));
+   
+  tree_util::add_edge(_tree_graph, target_csv, dependency_csv);
+
   //cout<< "insert edge:" << n->target << " : " << n->dependency << endl;
   //productions that are not part of the program doesn't get executed;: same as make!
 
@@ -270,6 +278,19 @@ node* graph::find(string node)
   if(itr != _graph_map.end()) 
     {
       return _graph_map[node];
+    }
+  return NULL;
+}
+
+node* graph::findTargets(string dependency_cpp) 
+{
+  for(gmap::iterator i=_graph_map.begin(); i != _graph_map.end(); i++) 
+    {
+      node* target = (*i).second;
+
+      if(target->prod_stmt.getDependencyFilesCSV().compare(dependency_cpp) == 0)
+	return target;
+   
     }
   return NULL;
 }
