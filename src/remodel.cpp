@@ -97,24 +97,3 @@ int main()
 
   return 0;
 }
-
- // Graph g(6);
-  // g.addEdge(0, 1);
-  // g.addEdge(1, 2);
-  // g.addEdge(2,2);
-  // g.addEdge(4, 0);
-  // g.addEdge(4, 1);
-  // g.addEdge(2, 3);
-  // g.addEdge(3, 1);
-  // if(g.isCyclic())
-  //   cout << "Graph contains cycle" << endl;
-  // else
-  //   cout << "Graph doesn't contain cycle" << endl;
-
-
-
-  // g.addEdge(3, 5);
-
-
-  // cout << "Following is a Topological Sort of the given graph \n";
-  // g.topologicalSort();
