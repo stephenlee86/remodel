@@ -21,6 +21,7 @@ class commandutil
   static void convertToCharArray( string str, char c[]);
   static bool isModified(map<string, bool> changes_list, string dependency);
   static void create_sub_directories(string filename);
+  static bool targetExists(string target);
   /*
   static void exec_in_recursive_parallel(tree*& tree, graph &graph, map<string, bool> &val);
   static void exec_in_recursive_parallel(graph graph);

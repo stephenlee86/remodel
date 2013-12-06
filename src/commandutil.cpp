@@ -58,11 +58,13 @@ string commandutil::exec(string u)
 //     return dir_exists;
 // }
 
-void commandutil::exec_cmd(string cmd)
+void commandutil::exec_cmd(string cmd_str)
 {
   // thread t1(exec, cmd);
   // t1.join();
-  cout << cmd  << endl;
+  char cmd[1024];
+  convertToCharArray(cmd_str, cmd);
+  system(cmd);
 }
 
 void commandutil::convertToCharArray( string str, char c[])
@@ -78,10 +80,10 @@ void commandutil::create_sub_directories(string filename)
   if (std::string::npos != last_slash_idx)
     {
       string directory = ".remodel/" + filename.substr(0, last_slash_idx) ;
-
       const char *dir;
       dir = strdup(directory.c_str());
       mkdir(dir, 0755);
+
     }
   
 }
@@ -119,7 +121,8 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 	      }
 	    else 
 	      {
-		cout<<"Not copying.. "<<endl;
+		change_tracker[targets_csv[k]] = false;
+		cout<<"Not copying.. " << targets_csv[k] <<endl;
 	      }
 	  } else {
 	    cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
@@ -144,11 +147,32 @@ bool commandutil::isModified(map<string, bool> changes_list, string dependency)
      
       map<string, bool>::iterator it = changes_list.find(dep_list[i]);
       if(it != changes_list.end()) {
-	cout << " This --> " << changes_list[(*it).first] << (*it).second << endl;
-	flag = flag || (*it).second;//
+	cout << " This --> target" << changes_list[(*it).first] << (*it).second << endl;
+
+	flag = flag || (*it).second;
       }
+
+      //if file doesn't exist //compile the code
+      
+
     }
+
   flag = flag || changes_list[dependency];
+  return flag;
+}
+bool commandutil::targetExists(string target)
+{
+  bool flag = true;
+  
+  vector<string> tar_list = stringutil::split(target,",");
+  for(unsigned int i = 0; i < tar_list.size(); i++)
+    {
+      if(!ifstream(tar_list[i]))
+	{
+	  flag = false;
+	}
+    }
+
   return flag;
 }
 
@@ -197,13 +221,15 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 	    if(node != NULL) 
 	      {
 		cout << "Should the command be executed? "<< node->dependency << isModified(changes_list,  node->dependency) << endl;
+		cout << targetExists(node->target)  << node->target;
 		
-		if (isModified(changes_list,  node->dependency) == true) {
+
+		if (isModified(changes_list,  node->dependency) == true || !targetExists(node->target)) {
 		  string cmd = node->prod_stmt.getCommand() ;
 		
 		  if(cmd.compare("") != 0)
 		    cmd = cmd.substr(1,cmd.length()-2);
-		  //cout<< targets[j] << " " << cmd << endl;
+		  cout<< targets[j] << " " << cmd << endl;
 		  if(i != 1)
 		    tree_threads.push_back(new thread(exec_cmd, cmd));
 		  else {
@@ -212,7 +238,7 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 		}
 		else 
 		  {
-		    cout << " Not executed cos ddependency was not modified" << endl;
+		    cout << " Not executed cos dependency was not modified" << endl;
 		  }
 	      } 
 	    else 
