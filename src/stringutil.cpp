@@ -33,7 +33,7 @@ string& stringutil::trim(string &s)
 
 // split: receives a string delimiter; returns a vector of strings
 //http://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
-const vector<string> stringutil::split(string &str, string delimiter, int rep) {
+const vector<string> stringutil::split(string str, string delimiter, int rep) {
   //if (!_flds.empty()) _flds.clear();  // empty vector if necessary
   vector<string> _flds;
   size_t pos = 0;

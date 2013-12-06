@@ -1,7 +1,7 @@
 all: clean remodel
 
-remodel: stringutil.o commandutil.o parser.o graph.o production.o remodel.o
-	g++ stringutil.o commandutil.o parser.o graph.o production.o remodel.o -o remodel
+remodel: stringutil.o commandutil.o parser.o graph.o production.o md5diff.o remodel.o tree.o
+	g++ stringutil.o commandutil.o parser.o graph.o production.o md5diff.o  tree.o remodel.o -o remodel -lcrypto
 
 remodel.o: remodel.cpp
 	g++ -c -Wall -pedantic remodel.cpp
@@ -18,8 +18,11 @@ commandutil.o: commandutil.cpp
 production.o: production.cpp
 	g++ -c -Wall -pedantic production.cpp
 
-graph.o: graph.cpp
+graph.o: graph.cpp 
 	g++ -c -Wall -pedantic graph.cpp
+
+tree.o: tree.cpp
+	g++ -c tree.cpp
 
 md5diff.o: md5diff.cpp
 	g++ -c -Wall md5diff.cpp -lcrypto

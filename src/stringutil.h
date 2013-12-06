@@ -9,6 +9,6 @@ class stringutil
   static string& ltrim(string &s);
   static string& rtrim(string &s);
   static string& trim(string &s);
-  static const vector<string> split(string &str, string delimiter, int rep=0);
+  static const vector<string> split(string str, string delimiter, int rep=0);
 };
 #endif

@@ -73,7 +73,7 @@ std::string md5diff::compute_md5(char* file)
   
   return hashcode;
 }
-
+/*
 int main()
 {
   //char* f1 = "parser.cpp";
@@ -89,3 +89,4 @@ int main()
 
   return 0;
 }
+*/

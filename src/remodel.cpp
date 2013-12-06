@@ -58,15 +58,24 @@ int main()
   else
     cout << "Graph doesn't contain cycle" << endl;
 
-  //check for syntax and there is going to be only one root.
+  vector<node*> leafnodes = graph.findAllLeafNodes();
+  for(unsigned int i = 0; i < leafnodes.size();i++)
+    {
+      cout<<"Target:" << leafnodes[i]->target << endl;
+    }
+  // //check for syntax and there is going to be only one root.
 
-  //graph.print();
+  // graph.print();
   queue<string> queue = graph.topological_sort();
+  
+
   while (!queue.empty())
     {
       cout<< "FROM QUEUE:" << queue.front() << " " << endl;
       queue.pop();
     }
+  
+
   //commandutil::exec_all(queue, graph);
   return 0;
 

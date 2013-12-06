@@ -2,15 +2,16 @@
 //http://www.geeksforgeeks.org/detect-cycle-in-a-graph/
 // A C++ program to print topological sorting of a DAG
 
-#include<iostream>
+#include <iostream>
 #include <queue>
 #include <map>
-
+#include <vector>
 using namespace std;
 
 #include "production.h"
 #include "graph.h"
 #include "stringutil.h"
+#include "tree.h"
 
 gmap graph::get_graph()
 {
@@ -23,7 +24,7 @@ void graph::print()
   for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
     {
       string key = (*i).first;
-      cout << "Target.. "<<key << endl;
+      cout << "Target.. "<<_graph_map[key]->prod_stmt.getTargetFilesCSV()<< key<< _graph_map[key]->target<< endl;
       cout <<"     child:: " << _graph_map[key]->dependency << endl;
 
       // for(map<string, node*>::iterator j = _graph_map[key].begin(); j!=_graph_map[key].end(); ++j)
@@ -38,11 +39,11 @@ void graph::insert_edge(production prod_stmt)
 {
   string target_csv = prod_stmt.getTargetFilesCSV();
   string dependency_csv = prod_stmt.getDependencyFilesCSV();
-  //cout << target_csv << " : " << dependency_csv << endl;
+  //  cout<< "insert edge:" << target_csv << " : " << dependency_csv << endl;
   
   gmap::iterator itr = _graph_map.begin();
   itr = _graph_map.find(target_csv);
-  node *vertex = new node(target_csv, dependency_csv, prod_stmt);
+  node *n = new node(target_csv, dependency_csv, prod_stmt);
  
   if(itr == _graph_map.end())
     {
@@ -50,14 +51,14 @@ void graph::insert_edge(production prod_stmt)
       //map<string, node*> dependent_map; 
       //dependent_map[dependency_csv] = v;
       //_graph_map[target_csv] = dependent_map;
-      //      _graph_map[target_csv] = vertex;
-      //_graph_map.insert(make_pair(targe_csv, vertex));
+      //      _graph_map[target_csv] = node;
+      //_graph_map.insert(make_pair(targe_csv, node));
     } 
   else 
     {
       //target is found - duplicate targets... overide
       cout<<"Warning: overiding commands for target: '"<< target_csv <<"'"<<endl;
-      // _graph_map[target_csv] = vertex;
+      // _graph_map[target_csv] = node;
       // map<string, node *> dependent_map = _graph_map[target_csv];
       // map<string, node *>::iterator d_itr = dependent_map.begin();
       // d_itr = dependent_map.find(dependency_csv);
@@ -75,23 +76,27 @@ void graph::insert_edge(production prod_stmt)
       // 	  cout << target_csv << " " << dependency_csv << endl << endl;
       // 	}
     }
-  _graph_map.insert(make_pair(target_csv, vertex));
+  _graph_map.insert(make_pair(target_csv, n));
+  //cout<< "insert edge:" << n->target << " : " << n->dependency << endl;
   //productions that are not part of the program doesn't get executed;: same as make!
+
+  //make a tree for actual computation
+  //
 }
 
-void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue)
+void graph::topological_sort_graph(string target_csv, map<string, bool> &visited_map, queue<string> &queue)
 {
   //Check to see if not leaf... 
   gmap::iterator vitr = _graph_map.begin();
-  vitr = _graph_map.find(vertex);
+  vitr = _graph_map.find(target_csv);
   if(vitr == _graph_map.end())
     {
       //leaf node ---  e.g. bar.o <- bar.cpp and bar.cpp is the leaf node... 
-      //cout << vertex << endl;
+      //cout << node << endl;
       //check by breaking it up.... 
       
       //if more than one dependency... visit them separately..
-      vector<string> target_files = stringutil::split(vertex, ",");	  
+      vector<string> target_files = stringutil::split(target_csv, ",");	  
       //cout << target_files.size() << " Size" << endl;
       if(target_files.size()>1)
 	{
@@ -108,12 +113,12 @@ void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map
     }
 
   // Mark the current node as visited.
-  visited_map[vertex] = true;
+  visited_map[target_csv] = true;
   
-  //  cout << "Visiting " << vertex << endl;
+  //  cout << "Visiting " << node << endl;
   //since there can't be duplicate targets: a<-b a<-c is not allowed
   
-  node* node =  _graph_map[vertex];
+  node* node =  _graph_map[target_csv];
   string dependency = node->dependency;
   if (!visited_map[dependency])
     {
@@ -121,9 +126,9 @@ void graph::topological_sort_graph(string vertex, map<string, bool> &visited_map
       topological_sort_graph(dependency, visited_map, queue);
     }
 
-  // cout << "Visiting " << vertex  << " ends" << endl;
-  // Push current vertex to stack which stores result
-  queue.push(vertex);
+  // cout << "Visiting " << node  << " ends" << endl;
+  // Push current node to stack which stores result
+  queue.push(target_csv);
 }
 
 //This is printing in reverse order ... need to order them correctly.
@@ -158,60 +163,73 @@ const queue<string> graph::topological_sort()
   return queue;
 }
 
-
-
-void graph::add_edge(map<string, string> &graph_map, string target, string dependency)
-{
-  graph_map[target] = dependency;
-}
-
-bool graph::is_cyclic_graph(map<string, string> graph_map, string v, map<string, bool> visited, map<string,bool> &rec_stack)
-{
-  
-  //  cout << "Vertex: " << v << visited[v] <<endl ;
-  
-  map<string, string>::iterator itr = graph_map.begin();
+			
+bool graph::is_cyclic_graph(map<string, vector<string> > graph_map, 
+			      string v, map<string, bool> visited, map<string,bool> &rec_stack)
+{ 
+  // cout << "Finding Node: " << v << visited[v] << endl ;
+  map<string, vector<string> >::iterator itr = graph_map.begin();
   itr = graph_map.find(v);
   if(itr == graph_map.end())
     {
       //if leaf node
       return false;
     }
-  //cout << "Vertex: " << v << visited[v] <<endl ;
+
+  //cout << "Found Node: " << v << " status:"<< visited[v]  << ":" << false <<endl ;
+
   if(visited[v] == false)
     {
       // Mark the current node as visited and part of recursion stack
       visited[v] = true;
       rec_stack[v] = true;
 
-      // Recur for all the vertices adjacent to this vertex
+      // Recur for all the vertices adjacent to this node
+      vector<string> dep_list = graph_map[v];
 
-      //        for(map<string, string> i = _adj_graph.begin(); i != adj[v].end(); ++i)
-      //{
-      string dependency = graph_map[v];
-      //  cout << "      Dependency(false): " << v << endl;
-      if ( !visited[dependency] && is_cyclic_graph(graph_map, dependency, visited, rec_stack) )
-	return true;
-      else if (rec_stack[dependency])
-	return true;
-      //}
+      for(unsigned int i = 0; i < dep_list.size(); ++i)
+	{
+
+	  string dependency = dep_list[i];//graph_map[v];
+	  //cout << "                 Checking its dependent node(false): " << dependency << endl;
+	  if ( !visited[dependency] && is_cyclic_graph(graph_map, dependency, visited, rec_stack) )
+	    return true;
+	  else if (rec_stack[dependency])
+	    return true;
+	  
+	  // vector<string> dependency_csv = stringutil::split(dependency, ",");
+	  // if(dependency_csv.size() > 1)
+	  //   {
+	  //     for(unsigned int i = 0; i < dependency_csv.size(); i++) 
+	  // 	{
+	  // 	  visited[dependency_csv[i]] = true;
+	  // 	  rec_stack[dependency_csv[i]] = true;
+	  // 	  if ( !visited[dependency_csv[i]] && is_cyclic_graph(graph_map, dependency_csv[i], visited, rec_stack) )
+	  // 	    return true;
+	  // 	  else if (rec_stack[dependency_csv[i]])
+	  // 	    return true;
+	  // 	}
+	  //   }
+
+	}
 
     }
-  rec_stack[v] = false;  // remove the vertex from recursion stack
+
+  rec_stack[v] = false;  // remove the node from recursion stack
   return false;
-}
+ }
 
 bool graph::is_cyclic()
 {
   map<string, bool> visited;
   map<string, bool> rec_stack;
-  map<string, string> graph_map;
+  map<string, vector<string> > graph_map;
 
   ///create a graph, 
   for(gmap::iterator i=_graph_map.begin(); i!= _graph_map.end();i++)
     {
       add_edge(graph_map, _graph_map[(*i).first]->target,_graph_map[(*i).first]->dependency);
-      //cout <<"saddedge:" << _graph_map[(*i).first]->target <<":" << _graph_map[(*i).first]->dependency<<":" << endl;
+      //      cout <<"addedge:" << _graph_map[(*i).first]->target <<":" << _graph_map[(*i).first]->dependency<<":" << endl;
       ///not regarding dependency because if dependency is not in target then it wont be cyclic
       visited[_graph_map[(*i).first]->target] = false;
       rec_stack[_graph_map[(*i).first]->target] = false;
@@ -226,42 +244,116 @@ bool graph::is_cyclic()
 	      for(unsigned int k = 0; k < dependency_csv.size(); k++)
 		{
 		  add_edge(graph_map, target_csv[j], dependency_csv[k]);
-
-		  visited[target_csv[j]] = false;
-		  rec_stack[target_csv[j]] = false;
 		  // cout <<"addedge:" << target_csv[j] <<":" << dependency_csv[k]<<":" << endl;
 		}
+	      visited[target_csv[j]] = false;
+	      rec_stack[target_csv[j]] = false;
 	    }
 	}
     }
   //check for cyclicity
-  for(map<string, string>::iterator i=graph_map.begin(); i != graph_map.end(); i++)
-    if (is_cyclic_graph(graph_map, (*i).first, visited, rec_stack))
-      return true;
-
+  for(map<string, vector<string > >::iterator i=graph_map.begin(); i != graph_map.end(); i++) 
+    {
+      if (is_cyclic_graph(graph_map, (*i).first, visited, rec_stack))
+	return true;
+    }
   return false;
 
   
 }
 
-node* graph::find(string vertex)
+node* graph::find(string node)
 {
 
   gmap::iterator itr = _graph_map.begin();
-  itr = _graph_map.find(vertex);
+  itr = _graph_map.find(node);
   if(itr != _graph_map.end()) 
     {
-        
-      return _graph_map[vertex];
-      // if(dep_map.size()>1) cout<<"something wrong??"<<endl;
-      // for( map<string, node*>::iterator i=dep_map.begin(); i!=dep_map.end(); ++i)
-      // 	{
-      // 	  return (*i).second;
-      // 	}
+      return _graph_map[node];
     }
-
-  cout << vertex << " not found!.. something must be wrong.." << endl;
   return NULL;
-
 }
 
+/*
+a,b <- c
+search for 'a' will return true
+ */
+bool graph::isKeyPresent(string key)
+{
+  for(gmap::iterator i=_graph_map.begin(); i != _graph_map.end(); i++) 
+    {
+      string target = (*i).first;
+      if((*i).first.find(key) != string::npos) return true;
+    }
+
+  return false;
+}
+
+bool graph::hasDependency(node* node)
+{
+  string dependency = node->dependency;
+  //  bool  fl = find(dependency);
+  //  cout<< "finding dependency for " << dependency << fl<<  endl;
+  bool flag = false;
+  if(isKeyPresent(dependency) == false) 
+    {
+      //
+      vector<string> dependency_csv = stringutil::split(dependency, ",");
+      if(dependency_csv.size()>1)
+	{
+	  for(unsigned int i = 0; i < dependency_csv.size(); i++)
+	    {
+	      //	      cout<< "finding dependency for " << dependency_csv[i] << find(dependency_csv[i])<<  endl;
+	      if(isKeyPresent(dependency_csv[i]) == true) 
+		{
+		  flag = true;//dependency was found
+		  break;
+		}
+	    }
+	}
+      else
+	{
+	  flag = false;
+	}
+    }
+  else {
+    flag = true;
+  }
+  return flag;
+}
+
+/*
+  a,b<-c,d 
+  d<-e
+*/
+//NEED TO CHECK PASS BY REF
+vector<node*> graph::findAllLeafNodes(){
+  
+  vector<node*> leafnodes;
+  for(gmap::iterator i=_graph_map.begin(); i != _graph_map.end(); i++) 
+    {
+      if(!hasDependency((*i).second))
+	{
+	  leafnodes.push_back((*i).second);
+	}
+    }
+  return leafnodes;
+}
+
+void graph::add_edge(map<string, vector<string> > &graph_map, 
+		       string target, string dependency)
+{
+  map<string, vector<string> >::iterator itr = graph_map.begin();
+  itr = graph_map.find(target);
+
+  if(itr == graph_map.end())
+    {
+      vector<string > dep_list;
+      dep_list.push_back(dependency);
+      graph_map[target] = dep_list;
+    }
+  else
+    {
+      graph_map[target].push_back(dependency);
+    }
+ }

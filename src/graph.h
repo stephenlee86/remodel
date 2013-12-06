@@ -1,8 +1,7 @@
-#include<iostream>
 #include <queue>
 #include <map>
-
-using namespace std;
+#include <vector>
+#include "tree.h"
 
 #ifndef _NODE_H
 #define _NODE_H
@@ -26,18 +25,18 @@ struct node
 #ifndef _GRAPHN_H
 #define _GRAPHN_H
 
-typedef map<string, node* > gmap;
+typedef map<string, node*> gmap;
 // Class to represent a graph
 class graph
 {
  private:
   gmap _graph_map;
+  vector<tree*> graph;
   void topological_sort_graph(string vertex, map<string, bool> &visited_map, queue<string> &queue);
   
   //  map<string, string> _adj_map;    // Pointer to an array containing adjacency lists
-  void add_edge(map<string,string> &, string target, string dependency);
-  bool is_cyclic_graph(map<string, string>, string , map<string, bool> , map<string,bool> &);  // used by isCyclic()
-  
+  void add_edge(map<string, vector<string> > &, string target, string dependency);
+  bool is_cyclic_graph(map<string, vector<string> >, string , map<string, bool> , map<string,bool> &);  // used by isCyclic()
 
  public:
   void insert_edge(production);
@@ -49,5 +48,9 @@ class graph
 
   gmap get_graph();
   node* find(string vertex);
+
+  bool hasDependency(node* node);
+  vector<node*> findAllLeafNodes();
+  bool isKeyPresent(string key);
 };
 #endif
