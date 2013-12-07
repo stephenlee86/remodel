@@ -273,7 +273,6 @@ void commandutil::exec_in_parallel(graph graph)
   for(unsigned int i = 0; i< order_graph.size() ;i++)
     {
       thread_pool.push_back(new thread(exec_tree_in_parallel, order_graph[i], graph));
-      break;
     }
   for(unsigned int i = 0; i < thread_pool.size();i++)
     {
