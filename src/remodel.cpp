@@ -27,7 +27,7 @@
 #include <iterator>
 #include <map>
 #include <queue>
-
+#include <cstring>
 using namespace std;
 
 #include "stringutil.h"
@@ -38,13 +38,26 @@ using namespace std;
 
 //TODO Sanity check of the grammar -- case where command can be any random query
 
-int main() 
-{  
+int main(int argc, char* argv[]) 
+{ 
+  string root = "DEFAULT";
+  char filename[]  = "remodel_makefile";
+  
+  if(argc == 2) 
+    {
+      root = string(argv[1]);
+    }
+  if(argc == 3)
+    {
+      strcpy(filename, argv[2]);
+      //string s = string(argv[2]);
+      //filename = ;
+    }
+  
+  
   //default name
-  char filename[] = "makefile_re";
-  string root = "test_cases/bar.o";
-
-  //char filename[] = "test_cases/cyclic_make_testcase_2";
+  
+  
   parser program(filename);
   vector<production> productions = program.parse();
 
