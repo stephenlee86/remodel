@@ -1,4 +1,7 @@
-DEFAULT <- test_cases/baz
+DEFAULT <- test_cases/baz, test_cases/cow
 test_cases/baz <- test_cases/foo.o, test_cases/bar.o: "g++ test_cases/foo.o test_cases/bar.o -o test_cases/baz"
 test_cases/foo.o <- test_cases/foo.cpp : "g++ -c test_cases/foo.cpp -o test_cases/foo.o"
 test_cases/bar.o <- test_cases/bar.cpp: "g++ -c test_cases/bar.cpp -o test_cases/bar.o"
+test_cases/cow <- test_cases/moo.o, test_cases/zoo.o: "g++ test_cases/zoo.o test_cases/moo.o -o test_cases/cow"
+test_cases/moo.o <- test_cases/moo.cpp : "g++ -c test_cases/moo.cpp -o test_cases/moo.o"
+test_cases/zoo.o <- test_cases/zoo.cpp: "g++ -c test_cases/zoo.cpp -o test_cases/zoo.o"

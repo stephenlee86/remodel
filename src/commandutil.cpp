@@ -65,6 +65,7 @@ void commandutil::exec_cmd(string cmd_str)
   char cmd[1024];
   convertToCharArray(cmd_str, cmd);
   system(cmd);
+  cout << cmd << endl;
 }
 
 void commandutil::convertToCharArray( string str, char c[])
@@ -122,7 +123,7 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 	    else 
 	      {
 		change_tracker[targets_csv[k]] = false;
-		cout<<"Not copying.. " << targets_csv[k] <<endl;
+		//cout<<"Not copying.. " << targets_csv[k] <<endl;
 	      }
 	  } else {
 	    cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
@@ -141,13 +142,13 @@ bool commandutil::isModified(map<string, bool> changes_list, string dependency)
   bool flag = false;
   
   vector<string> dep_list = stringutil::split(dependency,",");
-  cout << dependency << endl;
+  //cout << dependency << endl;
   for(unsigned int i = 0; i < dep_list.size(); i++)
     {
      
       map<string, bool>::iterator it = changes_list.find(dep_list[i]);
       if(it != changes_list.end()) {
-	cout << " This --> target" << changes_list[(*it).first] << (*it).second << endl;
+	//cout << " This --> target" << changes_list[(*it).first] << (*it).second << endl;
 
 	flag = flag || (*it).second;
       }
@@ -179,7 +180,7 @@ bool commandutil::targetExists(string target)
 void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph) 
 {
   int height = tree_util::height(order_graph);
-  cout << "height in parallel:" << height << endl;
+  //cout << "height in parallel:" << height << endl;
   map<string, bool> changes_list;
 
   //cos last ones will be ending with dependency like .cpp.. 
@@ -190,7 +191,7 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 
     vector<thread*> tree_threads;
     
-    cout << "executing these in parallel" << endl;
+    // cout << "executing these in parallel" << endl;
     for(unsigned int j = 0; j < targets.size(); j++)
       {
 	//if leaf node .. 
@@ -208,7 +209,7 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 	      }
 	    else
 	      {
-		cout << targets[j] << " not found!" << endl;
+		//cout << targets[j] << " not found!" << endl;
 	      }
 	  }
 	//up in the hierarchy
@@ -220,8 +221,8 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 	    node* node= graph.find(targets[j]);
 	    if(node != NULL) 
 	      {
-		cout << "Should the command be executed? "<< node->dependency << isModified(changes_list,  node->dependency) << endl;
-		cout << targetExists(node->target)  << node->target;
+		//cout << "Should the command be executed? "<< node->dependency << isModified(changes_list,  node->dependency) << endl;
+		//cout << targetExists(node->target)  << node->target;
 		
 
 		if (isModified(changes_list,  node->dependency) == true || !targetExists(node->target)) {
@@ -229,7 +230,7 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 		
 		  if(cmd.compare("") != 0)
 		    cmd = cmd.substr(1,cmd.length()-2);
-		  cout<< targets[j] << " " << cmd << endl;
+		  cout << cmd << endl;
 		  //if(i != 1)
 		    tree_threads.push_back(new thread(exec_cmd, cmd));
 		    // else {
@@ -237,15 +238,15 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 		    //cout << "rename karo" << targets[j] << endl;
 		    //}
 		}
-		else 
-		  {
-		    cout << " Not executed cos dependency was not modified" << endl;
-		  }
+		//else 
+		//{
+		    //   cout << " Not executed cos dependency was not modified" << endl;
+		//}
 	      } 
-	    else 
-	      {
-		cout << targets[j] << " not found!" << endl;
-	      }
+	    //else 
+	    //{
+	    //	cout << targets[j] << " not found!" << endl;
+	    //}
 	  }
       }
 
@@ -258,9 +259,9 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
     //check for changes
     copy_output(graph, targets, changes_list, i, height);
     
-    cout << " executing these in parallel .. ends" << endl;
+    // cout << " executing these in parallel .. ends" << endl;
 
-    cout<< endl;
+    //cout<< endl;
   }
 }
 
@@ -269,7 +270,7 @@ void commandutil::exec_in_parallel(graph graph)
 
   vector<tree*> order_graph = graph.get_tree_graph();
   vector<thread*> thread_pool;
-  cout << order_graph.size() << endl;
+  cout<< "#Roots:" << order_graph.size() << endl;
   for(unsigned int i = 0; i< order_graph.size() ;i++)
     {
       thread_pool.push_back(new thread(exec_tree_in_parallel, order_graph[i], graph));

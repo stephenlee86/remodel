@@ -97,17 +97,18 @@ void graph::create_tree_graph(string root)
   gmap::iterator it = _graph_map.begin();
   it = _graph_map.find(root);
   
-  if(it != _graph_map.end()) {
+  if(it != _graph_map.end()) 
+    {
     //found something to add
     tree_util::add_edge(_tree_graph, _graph_map[root]->target, _graph_map[root]->dependency);
     create_tree_graph(_graph_map[root]->dependency);
     vector<string> dep_list = stringutil::split(_graph_map[root]->dependency, ",");
+
     for(unsigned int i = 0; i < dep_list.size();i++) 
       {
-	create_tree_graph(dep_list[i]);
+  	create_tree_graph(dep_list[i]);
       }
-    
-  }
+    }
 }
 
 void graph::topological_sort_graph(string target_csv, map<string, bool> &visited_map, queue<string> &queue)

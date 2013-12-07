@@ -17,7 +17,7 @@ parser::parser(char* filename)
 
 parser::~parser() 
 {
-  cout << "The End." << endl;
+  //  cout << "The End." << endl;
 }
 
 vector<production>& parser::parse()

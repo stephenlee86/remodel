@@ -22,7 +22,7 @@ graph.o: graph.cpp
 	g++ -c -Wall -pedantic graph.cpp
 
 tree.o: tree.cpp
-	g++ -c tree.cpp
+	g++ -c -Wall -pedantic tree.cpp
 
 md5diff.o: md5diff.cpp
 	g++ -c -Wall md5diff.cpp -lcrypto
