@@ -51,7 +51,8 @@ class graph
   vector<tree*> get_tree_graph();
   node* find(string vertex);
   node* findTargets(string vertex);
-  
+  void create_tree_graph(string root);
+
   bool hasDependency(node* node);
   vector<node*> findAllLeafNodes();
   bool isKeyPresent(string key);

@@ -230,11 +230,12 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 		  if(cmd.compare("") != 0)
 		    cmd = cmd.substr(1,cmd.length()-2);
 		  cout<< targets[j] << " " << cmd << endl;
-		  if(i != 1)
+		  //if(i != 1)
 		    tree_threads.push_back(new thread(exec_cmd, cmd));
-		  else {
-		    cout << "rename karo" << targets[j] << endl;
-		  }
+		    // else {
+		    //root 
+		    //cout << "rename karo" << targets[j] << endl;
+		    //}
 		}
 		else 
 		  {

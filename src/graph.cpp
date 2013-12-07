@@ -83,13 +83,31 @@ void graph::insert_edge(production prod_stmt)
 
   _graph_map.insert(make_pair(target_csv, n));
    
-  tree_util::add_edge(_tree_graph, target_csv, dependency_csv);
+  //tree_util::add_edge(_tree_graph, target_csv, dependency_csv);
 
   //cout<< "insert edge:" << n->target << " : " << n->dependency << endl;
   //productions that are not part of the program doesn't get executed;: same as make!
 
   //make a tree for actual computation
   //
+}
+
+void graph::create_tree_graph(string root)
+{
+  gmap::iterator it = _graph_map.begin();
+  it = _graph_map.find(root);
+  
+  if(it != _graph_map.end()) {
+    //found something to add
+    tree_util::add_edge(_tree_graph, _graph_map[root]->target, _graph_map[root]->dependency);
+    create_tree_graph(_graph_map[root]->dependency);
+    vector<string> dep_list = stringutil::split(_graph_map[root]->dependency, ",");
+    for(unsigned int i = 0; i < dep_list.size();i++) 
+      {
+	create_tree_graph(dep_list[i]);
+      }
+    
+  }
 }
 
 void graph::topological_sort_graph(string target_csv, map<string, bool> &visited_map, queue<string> &queue)
@@ -150,6 +168,7 @@ const queue<string> graph::topological_sort()
     {
       //cout << "Targets: " << (*i).first << endl;
       visited_map[(*i).first] = false;
+      
     }
   
   for( gmap::iterator i=_graph_map.begin(); i!=_graph_map.end(); ++i)
