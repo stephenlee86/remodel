@@ -18,10 +18,10 @@ You should store the dependencies on disk in a special directory called .remodel
 Approach
 --------
 The remodel takes a 4-step approach:
-  - Parse the grammar
-  - Check for cyclic paths in the grammar
-  - Create a tree for the specified target
-  - Execute all the trees and its child in parallel
+  - Parse the grammar - The grammar is parsed and saved in hash map with the target as key and value as the production statement called the 'node' 
+  - Check for cyclic paths in the grammar - Checks for cycles in the graph as there could be statements such that remodel could run in loops. The program exists if there are cycles in the graph. i.e a is dependent on b and b is dependent on a
+  - Create a vector of tree for all roots - The DEFAULT root may contain multiple targets. Thus it creates a tree for each of the root specified in the grammar. In case the user specifies its own root 'remodel baz', it takes the users root and creates a tree
+  - Execute all the trees and its child in threads - For each root, a thread is spawned to execute the sequence. For a given tree, all independent statements are executed in parallel. Since, in a given level all statements are independent of each other, we use this information to execute the command and move up each level. MD5 checksum constraint is used to check if there is a change in the output for every level, and decide whether to execute the statements. An additional constraint of 'file being present' is used for executing the command. It may happen that another root  running in parallel may have created an output. The current root doesn't modify this output on being same, but uses this output for building its own target.   
 
 To RUN
 ------
