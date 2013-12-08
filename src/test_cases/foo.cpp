@@ -7,7 +7,7 @@ int bar();
 
 int foo() 
 {
-  cout << "Hello World in AA!" << endl;
+  cout << "Hello World in Fooo!" << endl;
 }
 
 int main()

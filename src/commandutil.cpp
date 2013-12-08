@@ -102,7 +102,7 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 	  char old_file[1024];
 	  convertToCharArray(".remodel/"+targets_csv[k], old_file);
 	  create_sub_directories(targets_csv[k]);
-  
+
 	  if(ifstream(old_file)){
 	    //file exists .. check md5
 	    md5diff md5diff1;
@@ -110,11 +110,12 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 	    char new_file[1024];
 	    convertToCharArray(targets_csv[k], new_file);
 	    
+	    //	    cout << old_file << new_file<< md5diff1.diff(new_file, old_file) << endl
 	    
 	    if(md5diff1.diff(new_file, old_file) == false)
 	      {
 		//
-		cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
+		//cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
 		char cmd[1024];
 		convertToCharArray("cp "+ targets_csv[k] + "  .remodel/"+ targets_csv[k], cmd);
 		system(cmd);
@@ -126,7 +127,7 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 		//cout<<"Not copying.. " << targets_csv[k] <<endl;
 	      }
 	  } else {
-	    cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
+	    //cout << "cp "<< targets_csv[k] << "  .remodel/" << targets_csv[k]<< endl;
 	    char cmd[1024];
 	    convertToCharArray("cp "+ targets_csv[k] + "  .remodel/"+ targets_csv[k], cmd);
 	    system(cmd);
@@ -135,6 +136,7 @@ void commandutil::copy_output(graph graph, vector<string> targets, map<string, b
 	}
     }
 }
+
 
 bool commandutil::isModified(map<string, bool> changes_list, string dependency)
 {
@@ -161,17 +163,19 @@ bool commandutil::isModified(map<string, bool> changes_list, string dependency)
   flag = flag || changes_list[dependency];
   return flag;
 }
+
 bool commandutil::targetExists(string target)
 {
   bool flag = true;
-  
+  md5diff md5diff1;
   vector<string> tar_list = stringutil::split(target,",");
   for(unsigned int i = 0; i < tar_list.size(); i++)
     {
       if(!ifstream(tar_list[i]))
 	{
 	  flag = false;
-	}
+	  break;
+	} 
     }
 
   return flag;
@@ -199,16 +203,28 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 	  {
 	    //execute the commands in parallel;
 	    node* node = graph.findTargets(targets[j]);
-	    if(node != NULL) 
+
+	    char old_file[1024];
+	    convertToCharArray(".remodel/"+targets[j], old_file);
+
+	    create_sub_directories(targets[j]);
+	    char new_file[1024];
+	    convertToCharArray(targets[j], new_file);
+	    md5diff md5diff1;
+	    
+	    //cout << ifstream(old_file) << " " << md5diff1.diff(new_file, old_file) <<endl;
+	    if(node != NULL && (!ifstream(old_file) || md5diff1.diff(new_file, old_file) == false)) 
 	      {
 		string cmd = node->prod_stmt.getCommand() ;
 		if(cmd.compare("") != 0)
 		  cmd = cmd.substr(1,cmd.length()-2);
 		//cout<< targets[j] << " " << cmd << endl;
 		tree_threads.push_back(new thread(exec_cmd, cmd));
+		changes_list[targets[j]] =true;
 	      }
 	    else
 	      {
+		cout << "No changes in " << node->dependency << " detected.." << endl;
 		//cout << targets[j] << " not found!" << endl;
 	      }
 	  }
@@ -224,15 +240,15 @@ void commandutil::exec_tree_in_parallel(tree* order_graph, graph graph)
 		//cout << "Should the command be executed? "<< node->dependency << isModified(changes_list,  node->dependency) << endl;
 		//cout << targetExists(node->target)  << node->target;
 		
-
 		if (isModified(changes_list,  node->dependency) == true || !targetExists(node->target)) {
 		  string cmd = node->prod_stmt.getCommand() ;
 		
 		  if(cmd.compare("") != 0)
 		    cmd = cmd.substr(1,cmd.length()-2);
-		  cout << cmd << endl;
+		  //cout << cmd << endl;
 		  //if(i != 1)
 		    tree_threads.push_back(new thread(exec_cmd, cmd));
+		    changes_list[node->target] =true;
 		    // else {
 		    //root 
 		    //cout << "rename karo" << targets[j] << endl;
