@@ -13,15 +13,6 @@ dependency ::= filename (',' filename)* <br/>
 target ::= filename (',' filename)*<br/>
 </code>
 
-Here's an example that builds the program baz from two source files, foo.cpp and bar.cpp.
-
-<code>
-DEFAULT <- baz <br/>
-baz <- foo.o, bar.o: "g++ foo.o bar.o -o baz"<br/>
-foo.o <- foo.cpp : "g++ -c foo.cpp -o foo.o"<br/>
-bar.o <- bar.cpp: "g++ -c bar.cpp -o bar.o"<br/>
-</code>
-
 You should store the dependencies on disk in a special directory called .remodel/, so that remodel will not re-execute any commands unless a dependency has been violated. 
 
 Approach
@@ -34,7 +25,7 @@ The remodel takes a 4-step approach:
 
 To RUN
 ------
-The default filename that remodel takes as input is remodel_makefile. This 'Makefile' should be in the same folder as remodel. In order to compile the files, ensure that the labels/targets reflect the relative path to the file. For example, if the class files are inside test_cases folder and remodel is up one folder then following will be 'remodel_makefile':
+The default filename that remodel takes as input is remodel_makefile. This 'Makefile' should be in the same folder as remodel. In order to compile the files using remodel, ensure that the labels/targets reflect the relative path to the dependency. For example, if the dependencies are inside test_cases folder and remodel is up one folder then following will be 'remodel_makefile':
 
 <code>
 DEFAULT <- test_cases/baz, test_cases/cow <br/>
@@ -47,4 +38,13 @@ test_cases/zoo.o <- test_cases/zoo.cpp: "g++ -c test_cases/zoo.cpp -o test_cases
 </code>
 
 
+If the dependencies are present in the same folder as remodel executable, no relative path is needed. 
 
+An example that builds the program baz from two source files, foo.cpp and bar.cpp.
+
+<code>
+DEFAULT <- baz <br/>
+baz <- foo.o, bar.o: "g++ foo.o bar.o -o baz"<br/>
+foo.o <- foo.cpp : "g++ -c foo.cpp -o foo.o"<br/>
+bar.o <- bar.cpp: "g++ -c bar.cpp -o bar.o"<br/>
+</code>
