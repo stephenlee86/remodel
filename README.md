@@ -18,14 +18,20 @@ You should store the dependencies on disk in a special directory called .remodel
 Approach
 --------
 The remodel takes a 4-step approach:
-  - Parse the grammar - The grammar is parsed and saved in hash map with the target as key and value as the production statement called the 'node' 
+  - Parse the grammar - The grammar is parsed and saved in hash map with the target as key and value as the production statement called the 'node'. 
   - Check for cyclic paths in the grammar - Checks for cycles in the graph as there could be statements such that remodel could run in loops. The program exists if there are cycles in the graph. i.e a is dependent on b and b is dependent on a
   - Create a vector of tree for all roots - The DEFAULT root may contain multiple targets. Thus it creates a tree for each of the root specified in the grammar. In case the user specifies its own root 'remodel baz', it takes the users root and creates a tree
   - Execute all the trees and its child in threads - For each root, a thread is spawned to execute the sequence. For a given tree, all independent statements are executed in parallel. Since, in a given level all statements are independent of each other, we use this information to execute the command and move up each level. MD5 checksum constraint is used to check if there is a change in the output for every level, and decide whether to execute the statements. An additional constraint of 'file being present' is used for executing the command. It may happen that another root  running in parallel may have created an output. The current root doesn't modify this output on being same, but uses this output for building its own target.   
 
-To RUN
-------
-The default filename that remodel takes as input is remodel_makefile. This 'Makefile' should be in the same folder as remodel. In order to compile the files using remodel, ensure that the labels/targets reflect the relative path to the dependency. For example, if the dependencies are inside test_cases folder and remodel is up one folder then following will be 'remodel_makefile':
+Build
+-----
+The makefile for remodel is present inside the src folder. The remodel requires openssl library for computing md5 checksum. 
+
+Checkout the src code and run make. This should generate remodel as ouput.  
+
+Run
+---
+remodel by default takes input a file called remodel_makefile. This can be found inside the src folder. This 'Makefile' should be in the same folder as remodel. In order to compile the files using remodel, ensure that the labels/targets reflect the relative path to the dependency. For example, if the dependencies are inside test_cases folder and remodel is up one folder then following will be 'remodel_makefile':
 
 <code>
 DEFAULT <- test_cases/baz, test_cases/cow <br/>
@@ -40,7 +46,7 @@ test_cases/zoo.o <- test_cases/zoo.cpp: "g++ -c test_cases/zoo.cpp -o test_cases
 
 If the dependencies are present in the same folder as remodel executable, no relative path is needed. 
 
-An example that builds the program baz from two source files, foo.cpp and bar.cpp.
+An example that builds the program baz from two source files, foo.cpp and bar.cpp is present inside the src folder
 
 <code>
 DEFAULT <- baz <br/>
@@ -48,3 +54,49 @@ baz <- foo.o, bar.o: "g++ foo.o bar.o -o baz"<br/>
 foo.o <- foo.cpp : "g++ -c foo.cpp -o foo.o"<br/>
 bar.o <- bar.cpp: "g++ -c bar.cpp -o bar.o"<br/>
 </code>
+
+remodel also takes two parameters as input
+  - the root
+  - makefile fiename 
+
+The first will compile only the target mentioned in the parameter. If the second parameter i.e. the filename is specified then it will read the grammar from that file.
+
+Testing
+-------
+Case 1: Using the defuault option
+---------------------------------
+If inside the src folder:
+<code>
+remodel 
+</code>
+This should compile output for test_cases/baz and test_cases/cow. Two executables will be created inside the test_cases folder namely cow and baz. 
+
+Case 2: Compiling only a specific target
+----------------------------------------
+If inside the src folder:
+<code>
+remodel test_cases/baz 
+</code>
+This should compile output for only baz
+
+Case 3: Compiling only a specific target with a user defined makefile
+---------------------------------------------------------------------
+If inside the src folder:
+<code>
+remodel test_cases/baz remodel_makefile
+</code>
+This should compile output for only baz
+
+Case 4: Check for cycles in the grammar
+---------------------------------------
+Check for cycles:
+<code>
+./remodel DEFAULT cyclic_remodel_makefile
+</code>
+
+Note: There are two remodel_makefile, one inside the src folder and the other inside test_cases. These two makefiles are present depending on where remodel is executed. In test_cases folder, since dependencies are in the same folder, the target doesn't have relative path appended in the target. 
+
+
+
+
+
