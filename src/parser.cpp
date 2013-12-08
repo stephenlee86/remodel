@@ -12,7 +12,7 @@ using namespace std;
 parser::parser(char* filename)
 {
   _filename = filename;
-  cout << "Parsing " << filename << endl;
+  //cout << "Parsing " << filename << endl;
 }
 
 parser::~parser() 

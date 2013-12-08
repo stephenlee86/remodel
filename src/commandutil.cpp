@@ -286,7 +286,7 @@ void commandutil::exec_in_parallel(graph graph)
 
   vector<tree*> order_graph = graph.get_tree_graph();
   vector<thread*> thread_pool;
-  cout<< "#Roots:" << order_graph.size() << endl;
+  //cout<< "#Roots:" << order_graph.size() << endl;
   for(unsigned int i = 0; i< order_graph.size() ;i++)
     {
       thread_pool.push_back(new thread(exec_tree_in_parallel, order_graph[i], graph));

@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   parser program(filename);
   vector<production> productions = program.parse();
 
-  cout << productions.size() << " production statements found." << endl;
+  //  cout << productions.size() << " production statements found." << endl;
   
   graph graph;
 
@@ -59,10 +59,10 @@ int main(int argc, char* argv[])
     cout << "Graph contains cycle! Check the remodel_makefile" << endl;
     return 0;
     }
-  else 
-    {
-      cout << "Graph doesn't contain cycle" << endl;
-    }
+  //else 
+  //{
+  //  cout << "Graph doesn't contain cycle" << endl;
+  //}
 
   gmap graph_map = graph.get_graph();
   
