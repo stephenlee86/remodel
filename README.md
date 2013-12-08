@@ -31,6 +31,12 @@ Checkout the src code and run make. This should generate remodel as ouput.
 
 Run
 ---
+remodel also takes two parameters as input
+  - the root
+  - makefile fiename 
+
+The first will compile only the target mentioned in the parameter. If the second parameter i.e. the filename is specified then it will read the grammar from that file.
+
 remodel by default takes input a file called remodel_makefile. This can be found inside the src folder. This 'Makefile' should be in the same folder as remodel. In order to compile the files using remodel, ensure that the labels/targets reflect the relative path to the dependency. For example, if the dependencies are inside test_cases folder and remodel is up one folder then following will be 'remodel_makefile':
 
 <code>
@@ -55,19 +61,13 @@ foo.o <- foo.cpp : "g++ -c foo.cpp -o foo.o"<br/>
 bar.o <- bar.cpp: "g++ -c bar.cpp -o bar.o"<br/>
 </code>
 
-remodel also takes two parameters as input
-  - the root
-  - makefile fiename 
-
-The first will compile only the target mentioned in the parameter. If the second parameter i.e. the filename is specified then it will read the grammar from that file.
-
 Testing
 -------
 Case 1: Using the defuault option
 ---------------------------------
-If inside the src folder:
+If inside the src folder type:
 <code>
-remodel 
+./remodel 
 </code>
 This should compile output for test_cases/baz and test_cases/cow. Two executables will be created inside the test_cases folder namely cow and baz. 
 
@@ -75,7 +75,7 @@ Case 2: Compiling only a specific target
 ----------------------------------------
 If inside the src folder:
 <code>
-remodel test_cases/baz 
+./remodel test_cases/baz 
 </code>
 This should compile output for only baz
 
@@ -83,7 +83,7 @@ Case 3: Compiling only a specific target with a user defined makefile
 ---------------------------------------------------------------------
 If inside the src folder:
 <code>
-remodel test_cases/baz remodel_makefile
+./remodel test_cases/baz remodel_makefile
 </code>
 This should compile output for only baz
 
@@ -95,8 +95,4 @@ Check for cycles:
 </code>
 
 Note: There are two remodel_makefile, one inside the src folder and the other inside test_cases. These two makefiles are present depending on where remodel is executed. In test_cases folder, since dependencies are in the same folder, the target doesn't have relative path appended in the target. 
-
-
-
-
 
